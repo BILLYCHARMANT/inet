@@ -1,0 +1,43 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
+import { NextResponse } from "next/server";
+
+const ALLOWED = ["SUPER_ADMIN", "ADMIN"];
+const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_EXT = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp"].map((s) => s.toLowerCase()));
+
+export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || !session.user.role || !ALLOWED.includes(session.user.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const formData = await request.formData();
+  const file = formData.get("file");
+  if (!file || !(file instanceof File)) {
+    return NextResponse.json({ error: "No file provided" }, { status: 400 });
+  }
+  if (file.size > MAX_SIZE) {
+    return NextResponse.json({ error: "File too large (max 5MB)" }, { status: 400 });
+  }
+
+  const ext = path.extname(file.name).toLowerCase() || "";
+  if (!ALLOWED_EXT.has(ext)) {
+    return NextResponse.json(
+      { error: "Only images allowed: PNG, JPG, JPEG, GIF, WEBP" },
+      { status: 400 }
+    );
+  }
+
+  const safeName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  const dir = path.join(process.cwd(), "public", "uploads", "images");
+  await mkdir(dir, { recursive: true });
+  const filePath = path.join(dir, safeName);
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  await writeFile(filePath, bytes);
+
+  const url = `/uploads/images/${safeName}`;
+  return NextResponse.json({ url });
+}

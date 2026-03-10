@@ -1,6 +1,7 @@
+import type { NextFetchEvent, NextRequest } from "next/server";
 import { withAuth } from "next-auth/middleware";
 
-export default withAuth({
+const authHandler = withAuth({
   pages: {
     signIn: "/login",
   },
@@ -17,6 +18,10 @@ export default withAuth({
     },
   },
 });
+
+export function proxy(request: NextRequest, event: NextFetchEvent) {
+  return authHandler(request, event);
+}
 
 export const config = {
   matcher: ["/e-learning/:path*", "/dashboard/:path*"],

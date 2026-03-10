@@ -1,5 +1,5 @@
 import type { NextFetchEvent, NextRequest } from "next/server";
-import { withAuth } from "next-auth/middleware";
+import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
 
 const authHandler = withAuth({
   pages: {
@@ -20,7 +20,7 @@ const authHandler = withAuth({
 });
 
 export function proxy(request: NextRequest, event: NextFetchEvent) {
-  return authHandler(request, event);
+  return authHandler(request as NextRequestWithAuth, event);
 }
 
 export const config = {

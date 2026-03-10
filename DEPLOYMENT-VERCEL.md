@@ -40,6 +40,8 @@ In the Vercel project: **Settings → Environment Variables**. Add these for **P
 | `AUTH_SECRET` | NextAuth secret (min 32 chars) | Generate: `openssl rand -base64 32` |
 | `NEXTAUTH_URL` | **Your Vercel app URL** (no trailing slash) | `https://your-app.vercel.app` or your custom domain |
 
+**Image uploads (dashboard):** Add **`BLOB_READ_WRITE_TOKEN`** so call images can be uploaded on Vercel (the server cannot write to disk). In Vercel: Storage → Create → Blob, then copy the token into Environment Variables. Without it, image upload returns 500.
+
 Optional (OAuth):
 
 | Variable | Description |

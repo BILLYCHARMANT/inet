@@ -65,7 +65,7 @@ export default function CallForm({ mode, initialData }: CallFormProps) {
       deadline: deadline || null,
       published: overrides.published ?? publishNow,
       status: overrides.status ?? (publishNow ? "open" : "draft"),
-      formSchema: formFields.length ? formFields : null,
+      formSchema: formFields.length ? formFields : undefined,
     };
   }
 

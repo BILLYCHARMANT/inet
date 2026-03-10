@@ -21,6 +21,7 @@
     "@auth/prisma-adapter": "^2.11.1",
     "@prisma/adapter-mariadb": "^7.4.2",
     "@prisma/client": "^7.4.2",
+    "@vercel/blob": "^0.25.1",
     "bcryptjs": "^3.0.3",
     "dotenv": "^16.4.5",
     "next": "16.1.6",

@@ -15,8 +15,14 @@ export async function POST(request: Request) {
     const body = await request.json();
     const parsed = createCallSchema.safeParse(body);
     if (!parsed.success) {
+      const flat = parsed.error.flatten();
+      const firstMessage =
+        flat.fieldErrors?.title?.[0] ??
+        flat.fieldErrors?.formSchema?.[0] ??
+        Object.values(flat.fieldErrors ?? {}).flat().find(Boolean) ??
+        "Validation failed";
       return NextResponse.json(
-        { error: parsed.error.flatten().fieldErrors?.title?.[0] ?? "Validation failed" },
+        { error: firstMessage, fieldErrors: flat.fieldErrors },
         { status: 400 }
       );
     }

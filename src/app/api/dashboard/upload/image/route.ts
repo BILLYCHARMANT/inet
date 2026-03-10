@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
+import { put } from "@vercel/blob";
 
 const ALLOWED = ["SUPER_ADMIN", "ADMIN"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -32,6 +33,21 @@ export async function POST(request: Request) {
   }
 
   const safeName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+
+  // On Vercel (and when BLOB_READ_WRITE_TOKEN is set), use Vercel Blob; otherwise write to public/uploads (local).
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const blob = await put(`images/${safeName}`, file, {
+        access: "public",
+        addRandomSuffix: true,
+      });
+      return NextResponse.json({ url: blob.url });
+    } catch (e) {
+      console.error("Vercel Blob upload failed:", e);
+      return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    }
+  }
+
   const dir = path.join(process.cwd(), "public", "uploads", "images");
   await mkdir(dir, { recursive: true });
   const filePath = path.join(dir, safeName);

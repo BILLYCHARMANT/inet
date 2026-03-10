@@ -30,7 +30,7 @@ export const createCallSchema = z.object({
   deadline: z.string().optional().or(z.literal("")),
   published: z.boolean().optional().default(false),
   status: z.enum(["draft", "open", "closed"]).optional().default("draft"),
-  formSchema: formSchemaArraySchema.optional(),
+  formSchema: formSchemaArraySchema.optional().nullable(),
 });
 
 export const submitCallSchema = z.object({

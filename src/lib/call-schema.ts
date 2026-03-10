@@ -20,14 +20,24 @@ export type FormField = z.infer<typeof formFieldSchema>;
 
 export const formSchemaArraySchema = z.array(formFieldSchema);
 
+// Optional string: accept string, null, undefined, or "" and normalize to string | null
+const optionalString = (maxLen: number) =>
+  z
+    .union([z.string().max(maxLen), z.null(), z.literal("")])
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? null : v));
+
 export const createCallSchema = z.object({
-  title: z.string().min(1).max(500),
+  title: z.string().min(1, "Title is required").max(500),
   slug: z.string().max(191).optional().nullable(),
   type: z.enum(CALL_TYPES).optional().default("APPLICATION"),
-  summary: z.string().max(2000).optional().nullable(),
-  description: z.string().max(10000).optional().nullable(),
-  imageUrl: z.string().max(2000).optional().nullable().or(z.literal("")),
-  deadline: z.string().optional().nullable().or(z.literal("")),
+  summary: optionalString(2000),
+  description: optionalString(10000),
+  imageUrl: optionalString(2000),
+  deadline: z
+    .union([z.string(), z.null(), z.literal("")])
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? null : v)),
   published: z.boolean().optional().default(false),
   status: z.enum(["draft", "open", "closed"]).optional().default("draft"),
   formSchema: formSchemaArraySchema.optional().nullable(),

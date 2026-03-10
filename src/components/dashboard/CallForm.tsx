@@ -30,6 +30,7 @@ export default function CallForm({ mode, initialData }: CallFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   const [title, setTitle] = useState("");
   const [type, setType] = useState<string>("APPLICATION");
@@ -71,8 +72,10 @@ export default function CallForm({ mode, initialData }: CallFormProps) {
 
   async function submit(payload: ReturnType<typeof buildPayload>) {
     setError("");
+    setFieldErrors({});
     if (!title.trim()) {
       setError("Title is required.");
+      setFieldErrors({ title: ["Title is required."] });
       return;
     }
     setLoading(true);
@@ -88,6 +91,7 @@ export default function CallForm({ mode, initialData }: CallFormProps) {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
+        setFieldErrors((data.fieldErrors as Record<string, string[]>) ?? {});
         throw new Error(data.error || (method === "POST" ? "Failed to create call" : "Failed to update call"));
       }
       if (mode === "create") {
@@ -135,12 +139,13 @@ export default function CallForm({ mode, initialData }: CallFormProps) {
         <input
           id="title"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => { setTitle(e.target.value); setFieldErrors((prev) => ({ ...prev, title: [] })); }}
           type="text"
           required
           placeholder="e.g. Summer 2025 Cohort"
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+          className={`w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none ${fieldErrors.title?.length ? "border-red-400 bg-red-50/50" : "border-slate-200"}`}
         />
+        {fieldErrors.title?.[0] && <p className="text-sm text-red-600 mt-1">{fieldErrors.title[0]}</p>}
       </div>
       <div>
         <label htmlFor="type" className="block text-sm font-semibold text-slate-700 mb-1">Type</label>

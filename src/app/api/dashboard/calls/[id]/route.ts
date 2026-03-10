@@ -50,7 +50,12 @@ export async function PATCH(
   if (!call) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   try {
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
 
     // Only published/status quick toggle (minimal payload)
     const { published: publishedToggle, status: statusOnly } = body;
@@ -67,8 +72,14 @@ export async function PATCH(
     // Full update
     const parsed = createCallSchema.safeParse(body);
     if (!parsed.success) {
+      const flat = parsed.error.flatten();
+      const firstMessage =
+        flat.fieldErrors?.title?.[0] ??
+        Object.values(flat.fieldErrors ?? {}).flat().find(Boolean) ??
+        parsed.error.issues[0]?.message ??
+        "Validation failed";
       return NextResponse.json(
-        { error: parsed.error.flatten().fieldErrors?.title?.[0] ?? "Validation failed" },
+        { error: firstMessage, fieldErrors: flat.fieldErrors },
         { status: 400 }
       );
     }

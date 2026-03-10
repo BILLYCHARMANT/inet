@@ -12,14 +12,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   try {
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
     const parsed = createCallSchema.safeParse(body);
     if (!parsed.success) {
       const flat = parsed.error.flatten();
+      const firstIssue = parsed.error.issues[0];
       const firstMessage =
         flat.fieldErrors?.title?.[0] ??
         flat.fieldErrors?.formSchema?.[0] ??
         Object.values(flat.fieldErrors ?? {}).flat().find(Boolean) ??
+        firstIssue?.message ??
         "Validation failed";
       return NextResponse.json(
         { error: firstMessage, fieldErrors: flat.fieldErrors },

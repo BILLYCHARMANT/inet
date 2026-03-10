@@ -29,6 +29,15 @@ The app supports **sign in with Google, GitHub, or email/password (credentials)*
 
 4. Run the app. **Register** at `/register` (email/password) or **Sign in** at `/login` with Google, GitHub, or credentials. Then open **E-Learning** (`/e-learning`) to use the protected area. Log in with the seeded accounts to use **Super Admin**, **Admin**, or **Mentor** roles (role shown in the header dropdown).
 
+## Deploying to Hostinger
+
+To prepare and deploy on Hostinger (VPS or Node.js hosting), see **[DEPLOYMENT-HOSTINGER.md](./DEPLOYMENT-HOSTINGER.md)**. Quick steps:
+
+1. Set production env vars (copy `env.hostinger.example` to `.env` on the server).
+2. Run `npm run build:hostinger` to build and prepare the standalone folder.
+3. Upload `.next/standalone` (and `.env`) to the server, or clone and build on the server.
+4. On the server run `node .next/standalone/server.js` (e.g. with PM2) and put Nginx/Apache in front.
+
 ## Getting Started
 
 First, run the development server:

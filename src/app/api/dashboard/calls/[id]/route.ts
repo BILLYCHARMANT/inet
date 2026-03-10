@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth";
+import { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
@@ -85,7 +86,9 @@ export async function PATCH(
         deadline: deadline ? new Date(deadline) : null,
         published: published ?? call.published,
         status: status === "open" || status === "closed" ? status : (published ? "open" : "draft"),
-        formSchema: formSchema && formSchema.length > 0 ? formSchema : call.formSchema,
+        formSchema: (formSchema && formSchema.length > 0
+          ? formSchema
+          : (call.formSchema != null ? call.formSchema : Prisma.JsonNull)) as Prisma.InputJsonValue,
       },
     });
     return NextResponse.json({ ok: true });

@@ -2,10 +2,26 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import CallCard from "@/components/dashboard/CallCard";
 
+type CallWithCount = Awaited<
+  ReturnType<
+    typeof prisma.callForApplication.findMany<{
+      include: { _count: { select: { applications: true } } };
+    }>
+  >
+>[number];
+
+type ApplicationWithCall = Awaited<
+  ReturnType<
+    typeof prisma.application.findMany<{
+      include: { call: { select: { title: true } } };
+    }>
+  >
+>[number];
+
 export default async function DashboardHomePage() {
-  let calls: Awaited<ReturnType<typeof prisma.callForApplication.findMany>>;
+  let calls: CallWithCount[];
   let applications: Awaited<ReturnType<typeof prisma.application.findMany>>;
-  let recentApplications: Awaited<ReturnType<typeof prisma.application.findMany>>;
+  let recentApplications: ApplicationWithCall[];
 
   try {
     [calls, applications, recentApplications] = await Promise.all([

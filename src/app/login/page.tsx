@@ -3,11 +3,11 @@
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
-export default function LoginPage() {
+function LoginForm() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/e-learning";
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
   const error = searchParams.get("error");
   const registered = searchParams.get("registered");
 
@@ -145,5 +145,17 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen hero-gradient flex items-center justify-center px-6 py-16">
+        <div className="text-slate-500 font-medium">Loading…</div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

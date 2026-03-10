@@ -5,6 +5,7 @@ import GitHubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma";
 import type { Adapter } from "next-auth/adapters";
+import type { Role } from "@/types/next-auth";
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
@@ -57,7 +58,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.name = user.name;
         token.picture = user.image;
-        token.role = (user as { role?: string }).role;
+        token.role = (user as { role?: Role }).role;
       }
       // For OAuth or when role missing, load from DB
       if (token.id && !token.role) {
@@ -65,7 +66,7 @@ export const authOptions: NextAuthOptions = {
           where: { id: token.id as string },
           select: { role: true },
         });
-        if (u) token.role = u.role;
+        if (u) token.role = u.role as Role;
       }
       return token;
     },
@@ -73,7 +74,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.email = token.email ?? undefined;
-        session.user.role = token.role as string;
+        session.user.role = token.role;
       }
       return session;
     },

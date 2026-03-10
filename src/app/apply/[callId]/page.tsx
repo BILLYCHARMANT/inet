@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import ApplyForm from "@/components/apply/ApplyForm";
 import CommunityGate from "@/components/apply/CommunityGate";
 
+export const dynamic = "force-dynamic";
+
 export default async function ApplyToCallPage({
   params,
 }: {

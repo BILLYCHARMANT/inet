@@ -5,6 +5,8 @@ import CallForm from "@/components/dashboard/CallForm";
 import type { CallFormInitialData } from "@/components/dashboard/CallForm";
 import type { FormField } from "@/lib/call-schema";
 
+export const dynamic = "force-dynamic";
+
 export default async function EditCallPage({
   params,
 }: {

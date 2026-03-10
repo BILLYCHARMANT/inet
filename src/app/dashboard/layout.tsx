@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
+export const dynamic = "force-dynamic";
+
 const ALLOWED_ROLES = ["SUPER_ADMIN", "ADMIN"];
 
 export default async function DashboardLayout({

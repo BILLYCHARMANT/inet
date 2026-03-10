@@ -3,6 +3,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import JoinApplicationFlow from "@/components/apply/JoinApplicationFlow";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Join INET Community | INET Maker",
   description: "Join the INET community. Get an account to see all upcoming opportunities and receive alerts by email and in the platform.",

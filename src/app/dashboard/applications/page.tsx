@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import ApplicationsTabs from "@/components/dashboard/ApplicationsTabs";
 
+export const dynamic = "force-dynamic";
+
 type Props = { searchParams: Promise<{ tab?: string }> };
 
 export default async function ApplicationsPage({ searchParams }: Props) {

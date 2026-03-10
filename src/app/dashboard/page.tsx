@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import CallCard from "@/components/dashboard/CallCard";
 
+export const dynamic = "force-dynamic";
+
 type CallWithCount = Awaited<
   ReturnType<
     typeof prisma.callForApplication.findMany<{

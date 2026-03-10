@@ -3,6 +3,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import PublishToggle from "@/components/dashboard/PublishToggle";
 
+export const dynamic = "force-dynamic";
+
 export default async function CallDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const call = await prisma.callForApplication.findUnique({

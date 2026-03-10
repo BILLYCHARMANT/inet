@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Join INET Community | INET Maker",
   description: "Join the INET community to get an account, see all upcoming opportunities, and receive alerts by email and in the platform.",

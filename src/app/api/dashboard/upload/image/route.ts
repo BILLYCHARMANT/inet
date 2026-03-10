@@ -34,7 +34,17 @@ export async function POST(request: Request) {
 
   const safeName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
 
-  // On Vercel (and when BLOB_READ_WRITE_TOKEN is set), use Vercel Blob; otherwise write to public/uploads (local).
+  // On Vercel we must use Blob storage (filesystem is read-only). Without the token we return a clear error.
+  if (process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN) {
+    return NextResponse.json(
+      {
+        error:
+          "Image upload is not configured on Vercel. In your Vercel project: Storage → Create Blob store, then add BLOB_READ_WRITE_TOKEN in Settings → Environment Variables.",
+      },
+      { status: 503 }
+    );
+  }
+
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
       const blob = await put(`images/${safeName}`, file, {
@@ -44,10 +54,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ url: blob.url });
     } catch (e) {
       console.error("Vercel Blob upload failed:", e);
-      return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Upload failed. Check that BLOB_READ_WRITE_TOKEN is set correctly in Vercel." },
+        { status: 500 }
+      );
     }
   }
 
+  // Local: write to public/uploads
   const dir = path.join(process.cwd(), "public", "uploads", "images");
   await mkdir(dir, { recursive: true });
   const filePath = path.join(dir, safeName);

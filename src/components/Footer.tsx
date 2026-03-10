@@ -14,7 +14,7 @@ export default function Footer() {
             </span>
           </div>
           <p className="text-slate-500 max-w-sm leading-relaxed">
-            Empowering innovators through digital fabrication, smart hardware design, and hands-on technical excellence since 2018.
+            Empowering innovators through digital fabrication, smart hardware design, and hands-on technical excellence since 2023.
           </p>
         </div>
         <div>
@@ -29,10 +29,9 @@ export default function Footer() {
         <div>
           <h4 className="font-bold text-slate-900 mb-6">Connect</h4>
           <ul className="space-y-4 text-slate-500 text-sm">
-            <li><a className="hover:text-primary" href="#">Twitter</a></li>
-            <li><a className="hover:text-primary" href="#">Instagram</a></li>
-            <li><a className="hover:text-primary" href="#">LinkedIn</a></li>
-            <li><a className="hover:text-primary" href="#">Discord</a></li>
+            <li><a className="hover:text-primary" href="https://www.linkedin.com/company/inetgrp" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+            <li><a className="hover:text-primary" href="https://www.instagram.com/inet_maker?igsh=YW5zNm85aTk2NnBs" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+            <li><a className="hover:text-primary" href="https://x.com/inet236724?s=11" target="_blank" rel="noopener noreferrer">X</a></li>
           </ul>
         </div>
       </div>

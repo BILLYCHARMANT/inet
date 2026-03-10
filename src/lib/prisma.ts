@@ -38,6 +38,6 @@ function getPrisma(): PrismaClient {
 // Lazy init: only connect when prisma is first used (avoids "DATABASE_URL is not set" during Vercel build).
 export const prisma = new Proxy({} as PrismaClient, {
   get(_, prop) {
-    return (getPrisma() as Record<string | symbol, unknown>)[prop];
+    return Reflect.get(getPrisma(), prop);
   },
 });

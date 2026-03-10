@@ -22,12 +22,12 @@ export const formSchemaArraySchema = z.array(formFieldSchema);
 
 export const createCallSchema = z.object({
   title: z.string().min(1).max(500),
-  slug: z.string().max(191).optional(),
+  slug: z.string().max(191).optional().nullable(),
   type: z.enum(CALL_TYPES).optional().default("APPLICATION"),
-  summary: z.string().max(2000).optional(),
-  description: z.string().max(10000).optional(),
-  imageUrl: z.string().max(2000).optional().or(z.literal("")),
-  deadline: z.string().optional().or(z.literal("")),
+  summary: z.string().max(2000).optional().nullable(),
+  description: z.string().max(10000).optional().nullable(),
+  imageUrl: z.string().max(2000).optional().nullable().or(z.literal("")),
+  deadline: z.string().optional().nullable().or(z.literal("")),
   published: z.boolean().optional().default(false),
   status: z.enum(["draft", "open", "closed"]).optional().default("draft"),
   formSchema: formSchemaArraySchema.optional().nullable(),

@@ -4,6 +4,20 @@ This project is set up to deploy on **Vercel**. The build uses the default Next.
 
 ---
 
+## Before you deploy: set environment variables
+
+**The build will succeed only if the app can load without connecting to the DB.** You still **must** add these in Vercel **before or right after** connecting the repo, or the app will fail at runtime:
+
+1. In your Vercel project go to **Settings → Environment Variables**.
+2. Add **at least** these for **Production** (and **Preview** if you use preview deployments):
+   - **`DATABASE_URL`** – your MySQL connection string (e.g. from Hostinger).
+   - **`AUTH_SECRET`** – run `openssl rand -base64 32` and paste the result.
+   - **`NEXTAUTH_URL`** – set to your Vercel URL **after** the first deploy (e.g. `https://your-project.vercel.app`), or leave blank for the first deploy and set it immediately after, then redeploy.
+
+Without `DATABASE_URL` and `AUTH_SECRET`, the site will build but will show errors when users sign in or when any page uses the database.
+
+---
+
 ## 1. Connect your repo
 
 1. Go to [vercel.com](https://vercel.com) and sign in (GitHub recommended).
@@ -81,12 +95,13 @@ In the Vercel project: **Settings → Domains** → add your domain and follow D
 
 ## 6. Checklist
 
-- [ ] Repo connected; root directory correct (`inet-app` or `.`)
-- [ ] `DATABASE_URL`, `AUTH_SECRET`, `NEXTAUTH_URL` set in Vercel env
-- [ ] `NEXTAUTH_URL` = your Vercel URL (or custom domain), no trailing slash
-- [ ] DB is reachable from the internet (e.g. Remote MySQL allowed)
-- [ ] `prisma db push` and `db:seed` run once against production DB
-- [ ] OAuth redirect URIs updated to production URL if using Google/GitHub
+- [ ] **`DATABASE_URL`** set in Vercel (Settings → Environment Variables) – required for app to work.
+- [ ] **`AUTH_SECRET`** set in Vercel (e.g. from `openssl rand -base64 32`).
+- [ ] **`NEXTAUTH_URL`** set to your Vercel URL or custom domain (no trailing slash).
+- [ ] Repo connected; root directory correct (`inet-app` or `.`).
+- [ ] DB is reachable from the internet (e.g. Hostinger Remote MySQL allowed for Vercel IPs or "Any").
+- [ ] `prisma db push` and `db:seed` run once against production DB (from your machine with the same `DATABASE_URL`).
+- [ ] OAuth redirect URIs updated to production URL if using Google/GitHub.
 
 ---
 

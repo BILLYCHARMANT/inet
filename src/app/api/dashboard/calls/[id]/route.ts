@@ -58,8 +58,10 @@ export async function PATCH(
     }
 
     // Only published/status quick toggle (minimal payload)
-    const { published: publishedToggle, status: statusOnly } = body;
-    if (Object.keys(body).length <= 2 && (typeof publishedToggle === "boolean" || statusOnly !== undefined)) {
+    const bodyObj = typeof body === "object" && body !== null ? (body as Record<string, unknown>) : {};
+    const publishedToggle = bodyObj.published;
+    const statusOnly = bodyObj.status;
+    if (Object.keys(bodyObj).length <= 2 && (typeof publishedToggle === "boolean" || statusOnly !== undefined)) {
       const updates: { published?: boolean; status?: string } = {};
       if (typeof publishedToggle === "boolean") updates.published = publishedToggle;
       if (statusOnly === "draft" || statusOnly === "open" || statusOnly === "closed") updates.status = statusOnly;

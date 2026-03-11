@@ -56,6 +56,10 @@ export default function CallForm({ mode, initialData }: CallFormProps) {
 
   function buildPayload(overrides: { published?: boolean; status?: string } = {}) {
     const slug = title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") || "call-" + Date.now();
+    // Only include form fields that have non-empty label (API requires label.min(1))
+    const validFormFields = formFields.filter(
+      (f) => typeof f.label === "string" && f.label.trim().length > 0
+    );
     return {
       title: title.trim(),
       slug: mode === "create" ? slug : undefined,
@@ -63,10 +67,10 @@ export default function CallForm({ mode, initialData }: CallFormProps) {
       summary: summary.trim() || null,
       description: description.trim() || null,
       imageUrl: imageUrl.trim() || null,
-      deadline: deadline || null,
+      deadline: deadline?.trim() || null,
       published: overrides.published ?? publishNow,
       status: overrides.status ?? (publishNow ? "open" : "draft"),
-      formSchema: formFields.length ? formFields : undefined,
+      formSchema: validFormFields.length ? validFormFields : undefined,
     };
   }
 
@@ -76,6 +80,14 @@ export default function CallForm({ mode, initialData }: CallFormProps) {
     if (!title.trim()) {
       setError("Title is required.");
       setFieldErrors({ title: ["Title is required."] });
+      return;
+    }
+    const invalidField = formFields.find(
+      (f) => !f.label || typeof f.label !== "string" || !f.label.trim()
+    );
+    if (invalidField) {
+      setError("Each form field must have a label. Please add a label to all fields or remove empty ones.");
+      setFieldErrors({ formSchema: ["Each form field must have a non-empty label."] });
       return;
     }
     setLoading(true);
@@ -92,7 +104,11 @@ export default function CallForm({ mode, initialData }: CallFormProps) {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         setFieldErrors((data.fieldErrors as Record<string, string[]>) ?? {});
-        throw new Error(data.error || (method === "POST" ? "Failed to create call" : "Failed to update call"));
+        const msg = data.error || (method === "POST" ? "Failed to create call" : "Failed to update call");
+        if (res.status === 400 && data.details) {
+          console.error("Validation error details:", data.details);
+        }
+        throw new Error(msg);
       }
       if (mode === "create") {
         router.push("/dashboard/applications");
@@ -204,7 +220,16 @@ export default function CallForm({ mode, initialData }: CallFormProps) {
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-4">
-        <CallFormSchemaBuilder fields={formFields} onChange={setFormFields} />
+        {fieldErrors.formSchema?.[0] && (
+          <p className="text-sm text-red-600 mb-2">{fieldErrors.formSchema[0]}</p>
+        )}
+        <CallFormSchemaBuilder
+          fields={formFields}
+          onChange={(next) => {
+            setFormFields(next);
+            if (fieldErrors.formSchema?.length) setFieldErrors((prev) => ({ ...prev, formSchema: [] }));
+          }}
+        />
       </div>
 
       {mode === "create" && (

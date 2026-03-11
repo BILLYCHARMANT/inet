@@ -28,8 +28,12 @@ export async function POST(request: Request) {
         Object.values(flat.fieldErrors ?? {}).flat().find(Boolean) ??
         firstIssue?.message ??
         "Validation failed";
+      const details = parsed.error.issues.map((i) => ({
+        path: i.path.join(".") || "body",
+        message: i.message,
+      }));
       return NextResponse.json(
-        { error: firstMessage, fieldErrors: flat.fieldErrors },
+        { error: firstMessage, fieldErrors: flat.fieldErrors, details },
         { status: 400 }
       );
     }
